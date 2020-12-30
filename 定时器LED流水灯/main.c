@@ -1,6 +1,5 @@
 #include <stc15f2k60s2.h>
 
-unsigned char Flag200ms;
 unsigned char count,i=0;
 
 void Timer0Init(void)		//1∫¡√Î@11.0592MHz
@@ -18,7 +17,6 @@ void Timer0Init(void)		//1∫¡√Î@11.0592MHz
 void main()
 {
 	Timer0Init();
-	
 	while(1);
 }
 
