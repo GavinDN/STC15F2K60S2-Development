@@ -1,0 +1,121 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              01/05/2021 20:50:24 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil MDK5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc15f2k60s2.h"
+   2          #include "tim.h"
+   3          #include "intrins.h"
+   4          
+   5          unsigned char keyval=0;
+   6          
+   7          sbit buzzer=P4^3;
+   8          sbit k1=P3^2;//定义按键k1
+   9          bit flag1000ms;
+  10          
+  11          //延时20ms用于按键消抖
+  12          void Delay20ms()    //@11.0592MHz
+  13          {
+  14   1        unsigned char i, j, k;
+  15   1      
+  16   1        _nop_();
+  17   1        _nop_();
+  18   1        i = 1;
+  19   1        j = 216;
+  20   1        k = 35;
+  21   1        do
+  22   1        {
+  23   2          do
+  24   2          {
+  25   3            while (--k);
+  26   3          } while (--j);
+  27   2        } while (--i);
+  28   1      }
+  29          
+  30          //定时器0
+  31          void timer0() interrupt 1 
+  32          {
+  33   1        static unsigned int i;
+  34   1        
+  35   1        if(++i >= 500)
+  36   1        {
+  37   2          flag1000ms = !flag1000ms;
+  38   2          i = 0;
+  39   2        }
+  40   1      }
+  41          
+  42          //模式3
+  43          void model3(void)
+  44          {
+  45   1        if(flag1000ms==1)
+  46   1        {
+  47   2          P0 = 0xff;buzzer=1;
+  48   2        }
+  49   1        if(flag1000ms==0)
+  50   1        {
+  51   2          buzzer = 0;P0=0xfe;
+  52   2        }
+  53   1      }
+  54          
+C51 COMPILER V9.60.0.0   MAIN                                                              01/05/2021 20:50:24 PAGE 2   
+
+  55          //中断0
+  56          void intr0(void) interrupt 0 
+  57          { 
+  58   1        Delay20ms();//按键消抖
+  59   1        
+  60   1        if(k1 == 0)
+  61   1        {
+  62   2          static unsigned char i=0;
+  63   2          
+  64   2          switch(i)//判断按键键值
+  65   2          {
+  66   3            case 0:keyval=1;break;//0 0
+  67   3            case 1:keyval=2;break;//1 1
+  68   3            case 2:keyval=3;break;//2 0
+  69   3          }
+  70   2          i++;
+  71   2          if(i>2)i=0;
+  72   2        }
+  73   1      }
+  74          
+  75          //主函数
+  76          void main(void)
+  77          { 
+  78   1        Timer0Init();//定时器0
+  79   1        
+  80   1        EX0 = 1;//边沿触发方式（下降沿）
+  81   1        IT0 = 1;
+  82   1        EX1 = 1;//边沿触发方式（下降沿）
+  83   1        IT1 = 1;
+  84   1        EA =1;//开启总中断
+  85   1      
+  86   1        while(1)
+  87   1        {
+  88   2          if(keyval==1)
+  89   2          {P0=~0x01;}
+  90   2          if(keyval==2)
+  91   2          {P0=0xff;}
+  92   2          if(keyval==3)
+  93   2          {model3();}
+  94   2        }
+  95   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    182    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

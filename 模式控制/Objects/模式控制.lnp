@@ -1,0 +1,4 @@
+".\Objects\main.obj",
+".\Objects\tim.obj" 
+TO ".\Objects\模式控制" 
+PRINT(".\Listings\模式控制.m51") RAMSIZE(256) 
