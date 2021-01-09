@@ -1,0 +1,73 @@
+C51 COMPILER V9.59.0.0   SEG                                                               11/05/2020 16:38:08 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE SEG
+OBJECT MODULE PLACED IN .\Objects\seg.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE seg.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\seg.l
+                    -st) TABS(2) OBJECT(.\Objects\seg.obj)
+
+line level    source
+
+   1          #include "seg.h"
+   2          #include "stc15f2k60s2.h"
+   3          
+   4          typedef unsigned int u16;
+   5          typedef unsigned char u8;
+   6          
+   7          sbit SER=P1^6;
+   8          sbit SCK=P3^4;
+   9          sbit RCK=P1^5;
+  10          sbit EN=P1^7;
+  11          
+  12          sbit DS4=P4^4;
+  13          sbit DS3=P4^5;
+  14          sbit DS2=P4^6;
+  15          sbit DS1=P4^7;
+  16          
+  17          u8 seg[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07};
+  18          u8 a=0;
+  19          
+  20          void Seg(void)
+  21          {
+  22   1        u8 i,num,c;
+  23   1        EN = 0;//消隐
+  24   1        for (i=0;i<1;i++)
+  25   1        {
+  26   2          switch(i)//打开位选
+  27   2          {
+  28   3            case 0:DS4=0;DS3=1;DS2=1;DS1=1;break;
+  29   3          }
+  30   2            num=seg[a];
+  31   2          for(c=0;c<8;c++)//一步步读取数据
+  32   2          {
+  33   3            SCK=0;
+  34   3            SER=num&0x80;
+  35   3            num=num<<1;
+  36   3            SCK=1;
+  37   3          }
+  38   2          RCK=0;RCK=1;
+  39   2          for(c=0;c<8;c++)//全灭清零
+  40   2          {
+  41   3            SCK=0;
+  42   3            SER=0x00;
+  43   3            SCK=1;
+  44   3          }
+  45   2          RCK=0;RCK=1;
+  46   2        } 
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     92    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.59.0.0   SEG                                                               11/05/2020 16:38:08 PAGE 2   
+
+   DATA SIZE        =      9    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

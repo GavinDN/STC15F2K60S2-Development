@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\应用预热" 
+PRINT(".\Listings\应用预热.m51") RAMSIZE(256) 
